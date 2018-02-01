@@ -1,5 +1,39 @@
 # ssh-akv-pubkeystore
-This is some simple code to make a centralized ssh public key store for a group of hosts.
+These are a couple scripts you can use to make Azure Key Vault a central store for ssh public keys, instead of managing many local ~/.ssh/authorized_keys files. This also has the benefit that a user's home dir doesn't need to exist for this to work.
+
+You'll need to make your own Azure Key Vault, as well as a client with access to it, and the client's secret (see below).
+
+I've used this in the past with some centralized user management systems such as Winbind (which is why the username supports DOMAIN.user as a lookup method), and database based management systems.
+
+This simply makes the username the key, and the contents of authorized_keys the value in AKV. Once you set up your AKV and script variables, testing is as simple as:
+
+```
+./set_ssh_key.py username authorized_keys_file
+```
+```
+./get_ssh_key.py username
+```
+You could adapt ./set_ssh_key.py as a wrapper to a web frontend, or you could do something similar to what I do, which is have a host people can ssh into with a password, and have the users populate their authorized_keys_file. After which, a cron job puts that file into AKV for them via a script in crontab:
+```
+#!/bin/bash
+marker="/root/akvsyncmarker"
+if ! [ -f $marker ];then
+  for i in `find /home/*/.ssh/authorized_keys`;do
+    touch $marker
+    useralias=`echo $i|awk -F/ '{ print $3 }'`
+    /root/set_ssh_key.py $useralias $i
+  done
+else
+  for i in `find /home/*/.ssh/authorized_keys -newer $marker`;do
+    touch $marker
+    useralias=`echo $i|awk -F/ '{ print $3 }'`
+    /root/set_ssh_key.py $useralias $i
+  done
+fi
+# Remove private keys from the server.
+find /home -name id_rsa -exec rm {} \;
+find /home -name id_dsa -exec rm {} \;
+```
 
 # Getting the Script Variables
 You'll need to get the following information to fill in your script:
@@ -36,3 +70,5 @@ Create a cmd user like sshauthcmd user, then and edit your /etc/ssh/sshd_config 
 AuthorizedKeysCommandUser sshauthcmduser
 AuthorizedKeysCommand /etc/ssh/get_ssh_key.py
 ```
+
+# Getting keys into AKV
