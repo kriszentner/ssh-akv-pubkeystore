@@ -3,13 +3,13 @@ This is some simple code to make a centralized ssh public key store for a group 
 
 # Setting it up
 You'll need to get the following information to fill in your script:
-* vault_name
+## vault_name
 When you make your Azure Key Vault, this is the name you give it.
-* client_id
+## client_id
 You'll get this when you make an app registration in AAD.
-* secret
+## secret
 When you generate a client secret for your client ID, you'll get this.
-* tenant
+## tenant
 You can find this by using the Azure CLI command: az account show on the subscription
 your Azure Key Vault is in.
 ```
@@ -28,3 +28,4 @@ az account show
   }
 }
 ```
+You can find more info [here](https://blogs.msdn.microsoft.com/kaevans/2016/10/31/using-azure-keyvault-to-store-secrets/)
