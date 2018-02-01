@@ -13,27 +13,6 @@ This simply makes the username the key, and the contents of authorized_keys the 
 ```
 ./get_ssh_key.py username
 ```
-You could adapt ./set_ssh_key.py as a wrapper to a web frontend, or you could do something similar to what I do, which is have a host people can ssh into with a password, and have the users populate their authorized_keys_file. After which, a cron job puts that file into AKV for them via a script in crontab:
-```
-#!/bin/bash
-marker="/root/akvsyncmarker"
-if ! [ -f $marker ];then
-  for i in `find /home/*/.ssh/authorized_keys`;do
-    touch $marker
-    useralias=`echo $i|awk -F/ '{ print $3 }'`
-    /root/set_ssh_key.py $useralias $i
-  done
-else
-  for i in `find /home/*/.ssh/authorized_keys -newer $marker`;do
-    touch $marker
-    useralias=`echo $i|awk -F/ '{ print $3 }'`
-    /root/set_ssh_key.py $useralias $i
-  done
-fi
-# Remove private keys from the server.
-find /home -name id_rsa -exec rm {} \;
-find /home -name id_dsa -exec rm {} \;
-```
 
 # Getting the Script Variables
 You'll need to get the following information to fill in your script:
@@ -70,5 +49,25 @@ Create a cmd user like sshauthcmd user, then and edit your /etc/ssh/sshd_config 
 AuthorizedKeysCommandUser sshauthcmduser
 AuthorizedKeysCommand /etc/ssh/get_ssh_key.py
 ```
-
-# Getting keys into AKV
+# Getting keys into Azure Key Vault
+You could adapt ./set_ssh_key.py as a wrapper to a web frontend, or you could do something similar to what I do, which is have a host people can ssh into with a password, and have the users populate their authorized_keys_file. After which, a cron job puts that file into AKV for them via a script in crontab:
+```
+#!/bin/bash
+marker="/root/akvsyncmarker"
+if ! [ -f $marker ];then
+  for i in `find /home/*/.ssh/authorized_keys`;do
+    touch $marker
+    useralias=`echo $i|awk -F/ '{ print $3 }'`
+    /root/set_ssh_key.py $useralias $i
+  done
+else
+  for i in `find /home/*/.ssh/authorized_keys -newer $marker`;do
+    touch $marker
+    useralias=`echo $i|awk -F/ '{ print $3 }'`
+    /root/set_ssh_key.py $useralias $i
+  done
+fi
+# Remove private keys from the server.
+find /home -name id_rsa -exec rm {} \;
+find /home -name id_dsa -exec rm {} \;
+```
