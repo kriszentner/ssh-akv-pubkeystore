@@ -41,14 +41,6 @@ az account show
 }
 ```
 You can find more info [here](https://blogs.msdn.microsoft.com/kaevans/2016/10/31/using-azure-keyvault-to-store-secrets/)
-
-# Setting up the ssh server
-Once you have the script variables, you can drop the script into /etc/ssh.
-Create a cmd user like sshauthcmd user, then and edit your /etc/ssh/sshd_config like so:
-```
-AuthorizedKeysCommandUser sshauthcmduser
-AuthorizedKeysCommand /etc/ssh/get_ssh_key.py
-```
 # Getting keys into Azure Key Vault
 You could adapt ./set_ssh_key.py as a wrapper to a web frontend, or you could do something similar to what I do, which is have a host people can ssh into with a password, and have the users populate their authorized_keys_file. After which, a cron job puts that file into AKV for them via a script in crontab:
 ```
@@ -70,4 +62,11 @@ fi
 # Remove private keys from the server.
 find /home -name id_rsa -exec rm {} \;
 find /home -name id_dsa -exec rm {} \;
+```
+# Setting up the ssh server
+Once you have the script variables, you can drop the script into /etc/ssh.
+Create a cmd user like sshauthcmd user, then and edit your /etc/ssh/sshd_config like so:
+```
+AuthorizedKeysCommandUser sshauthcmduser
+AuthorizedKeysCommand /etc/ssh/get_ssh_key.py
 ```
