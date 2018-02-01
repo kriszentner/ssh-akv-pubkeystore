@@ -65,7 +65,7 @@ find /home -name id_dsa -exec rm {} \;
 ```
 # Setting up the ssh server
 Once you have the script variables, you can drop the script into /etc/ssh.
-Create a cmd user like sshauthcmd user, then and edit your /etc/ssh/sshd_config like so:
+Create a cmd user like sshauthcmd user, then edit your /etc/ssh/sshd_config like so:
 ```
 AuthorizedKeysCommandUser sshauthcmduser
 AuthorizedKeysCommand /etc/ssh/get_ssh_key.py
