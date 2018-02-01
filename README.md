@@ -20,7 +20,6 @@ az account show
   "isDefault": true,
   "name": "My Subscription Name",
   "state": "Enabled",
-  "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
   "tenantId": "30393678-1231-31c2-3cad-6788a4956788",
   "user": {
     "name": "me@contoso.com",
