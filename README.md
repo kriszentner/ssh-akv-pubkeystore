@@ -1,7 +1,7 @@
 # ssh-akv-pubkeystore
 This is some simple code to make a centralized ssh public key store for a group of hosts.
 
-# Setting it up
+# Getting the Script Variables
 You'll need to get the following information to fill in your script:
 ## vault_name
 When you make your Azure Key Vault, this is the name you give it.
@@ -28,3 +28,11 @@ az account show
 }
 ```
 You can find more info [here](https://blogs.msdn.microsoft.com/kaevans/2016/10/31/using-azure-keyvault-to-store-secrets/)
+
+# Setting up the ssh server
+Once you have the script variables, you can drop the script into /etc/ssh.
+Create a cmd user like sshauthcmd user, then and edit your /etc/ssh/sshd_config like so:
+```
+AuthorizedKeysCommandUser sshauthcmduser
+AuthorizedKeysCommand /etc/ssh/get_ssh_key.py
+```
